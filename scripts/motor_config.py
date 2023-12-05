@@ -31,7 +31,7 @@ SCRIPT_PATH = os.path.dirname(__file__)
 
 #TODO Read this information from one script files between ROS and this...
 
-# python ~/b2_ws/src/bam_experimental/scripts/n_lateral_motor_config.py -v
+# python ~/b2_ws/src/bam_experimental/scripts/motor_config.py -v
 
 #IFLIGHT MOTOR INFO:
 # https://shop.iflight-rc.com/gimbal-motors-cat44/ipower-motor-gm110-10-brushless-gimbal-motor-pro1297
@@ -41,71 +41,58 @@ SCRIPT_PATH = os.path.dirname(__file__)
 CONFIG_BAM_2 = {
 
     'motor_position.output.sign' : [
-            ('11,12,13', '1'),
-            ('21,22,23', '1'),
+            ('1', '1'),
         ],
 
     'servo.max_power_W' : [
-        ('11,12,13', '80'),
-        ('21,22,23', '80'),
+        ('1', '20'),
 
     ],
     'servo.max_current_A' : [ #from blue  motor_current_limits: [2.5, 2.5, 2.5, 2.0, 2.0, 1.0, 1.0, 1.0]
-        ('11,12,13', '5'),
-        ('21,22,23', '5'),
+        ('1', '2'),
 
     ],
     'servo.derate_temperature' : [
-        ('11,12,13', '60'),
-        ('21,22,23', '60'),
+        ('1', '60'),
 
     ],
     'servo.fault_temperature' : [
-        ('11,12,13', '80'),
-        ('21,22,23', '80'),
+        ('1', '80'),
 
     ],
     'servo.pid_position.kp' : [
-        ('11,12,13', '100'),
-        ('21,22,23', '100'),
+        ('1', '100'),
 
     ],
     'servo.pid_position.ki' : [
-        ('11,12,13', '0'),
-        ('21,22,23', '0'),
+        ('1', '0'),
 
     ],
     'servo.pid_position.kd' : [
-        ('11,12,13', '0'),
-        ('21,22,23', '0'),
+        ('1', '0'),
 
     ],
     # 'servo.default_timeout_s' : [
     #     ('11,12,13,14,15,16,17,18', math.nan),
     # ],
     'servo.default_velocity_limit' : [
-        ('11,12,13', '100'),
-        ('21,22,23', '100'),
+        ('1', '100'),
     ],
     'servo.default_accel_limit' : [
-        ('11,12,13', '100'),
-        ('21,22,23', '100'),
+        ('1', '100'),
 
     ],
     'servopos.position_min' : [
-        ('11,12,13', '-10'),
-        ('21,22,23', '-10'),
+        ('1', '-10'),
 
     ],
     'servopos.position_max' : [
-        ('11,12,13', '10'),
-        ('21,22,23', '10'),
+        ('1', '10'),
 
 
     ],
     'servo.voltage_mode_control' : [
-        ('11,12,13', '1'),
-        ('21,22,23', '1'),
+        ('1', '0'),
     ],
 }
 
@@ -142,27 +129,15 @@ async def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', action='store_true')
     # parser.add_argument('--version', action='store_true')
-    parser.add_argument('-s', '--side', default="right",choices=["right", "left"])
     args = parser.parse_args()
 
     # if os.geteuid() != 0:
     #     raise RuntimeError('This must be run as root')
 
     transport = moteus.Fdcanusb()
-    #TODO What happens if two FDCAN USB CONNECTED?
 
     # print(args.side)
-    for i in range(1, 9):
-
-        if args.side == "right":
-            i = i + 10 # ID's for right are 11, 12, 13, etc.
-            if i not in [11,12,13]:
-                continue
-
-        elif args.side == "left":
-            i = i + 20 # ID's for left are 21, 22, 23, etc.
-            if i not in [21,22,23]:
-                continue
+    for i in range(1, 2):
 
         print(i)
         await config_servo(args, transport, i)

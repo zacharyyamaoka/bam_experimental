@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(experimental)
+project(bam_experimental)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
+set(CMAKE_CXX_STANDARD 17)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -16,6 +17,14 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+include(FetchContent)
+FetchContent_Declare(
+  moteus
+  GIT_REPOSITORY https://github.com/mjbots/moteus.git
+  GIT_TAG        25c847a7b7b739aa00d4f9a1a30fb041f2ce7a7b
+)
+
+FetchContent_MakeAvailable(moteus)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -104,7 +113,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES experimental
+#  LIBRARIES bam_experimental
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
@@ -122,7 +131,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/experimental.cpp
+#   src/${PROJECT_NAME}/bam_experimental.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -133,7 +142,12 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/experimental_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/bam_experimental_node.cpp)
+add_executable(n_lateral src/n_lateral.cpp)
+add_executable(simple_teleop src/simple_teleop.cpp)
+add_executable(n_lateral_teleop src/n_lateral_teleop.cpp)
+add_executable(n_lateral_pos_control src/n_lateral_pos_control.cpp)
+add_executable(bi_lateral_teleop src/bi_lateral_teleop.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -146,10 +160,31 @@ include_directories(
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(n_lateral
+  ${catkin_LIBRARIES}
+  moteus::cpp
+)
 
+target_link_libraries(simple_teleop
+  ${catkin_LIBRARIES}
+  moteus::cpp
+)
+
+target_link_libraries(n_lateral_teleop
+  ${catkin_LIBRARIES}
+  moteus::cpp
+)
+
+
+target_link_libraries(n_lateral_pos_control
+  ${catkin_LIBRARIES}
+  moteus::cpp
+)
+
+target_link_libraries(bi_lateral_teleop
+  ${catkin_LIBRARIES}
+  moteus::cpp
+)
 #############
 ## Install ##
 #############
@@ -197,7 +232,7 @@ catkin_install_python(PROGRAMS
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_experimental.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_bam_experimental.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
